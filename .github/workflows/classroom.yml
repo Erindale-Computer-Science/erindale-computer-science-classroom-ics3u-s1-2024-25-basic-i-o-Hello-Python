@@ -1,0 +1,39 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Basic IO Test 2
+      id: basic-io-test-2
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Basic IO Test 2
+        setup-command: ''
+        command: python hello.py
+        input: |-
+          John
+          Bru4d
+          world
+        expected-output: |-
+          Hello John
+          Hello Bru4d
+          Hello world
+        comparison-method: exact
+        timeout: 10
+        max-score: 3
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        BASIC-IO-TEST-2_RESULTS: "${{steps.basic-io-test-2.outputs.result}}"
+      with:
+        runners: basic-io-test-2
